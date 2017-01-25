@@ -90,7 +90,7 @@ export class LogService implements ErrorHandler {
     if (environment.envName === 'development') {
       console.log(message);
       if (error) {
-        console.log(error.stack);
+        console.log(error.stack || error);
       }
     } else {
       if (error) {
