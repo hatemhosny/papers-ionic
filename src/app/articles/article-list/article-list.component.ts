@@ -1,8 +1,8 @@
 import { ArticleModule } from './../article.module';
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 
-import { LogService } from './../../shared/log/log.service';
-import { LoadingService } from './../../shared/loading/loading.service';
+import { LogService } from './../../core/log/log.service';
+import { LoadingService } from './../../core/loading/loading.service';
 import { PaginationComponent } from './../../shared/pagination/pagination.component';
 import { ArticleService } from './../article.service';
 import { IArticle } from '../article.model';
