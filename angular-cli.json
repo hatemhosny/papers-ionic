@@ -23,7 +23,9 @@
         "scripts": [
             "../node_modules/jquery/dist/jquery.js",
             "../node_modules/materialize-css/dist/js/materialize.js",
-            "../node_modules/nprogress/nprogress.js"
+            "../node_modules/nprogress/nprogress.js",
+            "../node_modules/lokijs/build/lokijs.min.js",
+            "../node_modules/lokijs/build/loki-indexed-adapter.min.js"
         ],
         "environments": {
             "source": "environments/environment.ts",
