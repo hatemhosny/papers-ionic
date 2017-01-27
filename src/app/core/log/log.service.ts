@@ -6,14 +6,21 @@ import  { environment } from '../../../environments/environment';
 
 declare let Raven: any;
 
-type LogLevel = 'error' | 'warning' | 'info';
+const logLevel = {
+  error: 'error',
+  warning: 'warning',
+  info: 'info'
+};
 
 @Injectable()
-export class LogService implements ErrorHandler {
+export class LogService extends ErrorHandler {
 
   private defaultErrorMessage = 'An error has occured! An error report has been sent.';
 
-  constructor(private loadingService: LoadingService, private notification: NotificationService) { }
+  constructor(private loadingService: LoadingService, private notification: NotificationService) {
+   // Rethrow exceptions that occur in bootstrap to angular
+   super(true);
+  }
 
 /**
  * This method handles unhandeled exceptions caught by angular.
@@ -22,7 +29,7 @@ export class LogService implements ErrorHandler {
  */
   handleError(error: any): void {
     try {
-      this.log(error, true, true, 'error', this.defaultErrorMessage);
+      this.log(error, true, true, logLevel.error, this.defaultErrorMessage);
     } catch (err) {
       console.log(error);
       console.log(err);
@@ -33,21 +40,21 @@ export class LogService implements ErrorHandler {
  * This method should be used to handle exceptions
  */
   logError(error: any, message = this.defaultErrorMessage): void {
-    this.log(error, true, true, 'error', message);
+    this.log(error, true, true, logLevel.error, message);
   }
 
 /**
  * Log +/- notify warning
  */
   logWarning(message: string, notify = false): void {
-    this.log(null, false, notify, 'warning', message);
+    this.log(null, false, notify, logLevel.warning, message);
   }
 
 /**
  * Log +/- notify message
  */
   logMessage(message: string, notify = false): void {
-    this.log(null, false, notify, 'info', message);
+    this.log(null, false, notify, logLevel.info, message);
   }
 
 /**
@@ -55,7 +62,7 @@ export class LogService implements ErrorHandler {
  * in development environment, it logs to console
  * otherwise, it sends logs to server
  */
-  private log(error: any, stopLoading = false, notify = false, notificationType: LogLevel = 'info', message = ''): void {
+  private log(error: any, stopLoading = false, notify = false, notificationType = logLevel.info, message = ''): void {
 
     // stop progress loading
     if (stopLoading) {
@@ -65,13 +72,13 @@ export class LogService implements ErrorHandler {
     // show notification message
     if (notify && message) {
       switch (notificationType) {
-        case 'error':
+        case logLevel.error:
           this.notification.error(message);
           break;
-        case 'warning':
+        case logLevel.warning:
           this.notification.warning(message);
           break;
-        default:  // 'info'
+        default:  // logLevel.info
           this.notification.info(message);
       }
     }
@@ -87,18 +94,22 @@ export class LogService implements ErrorHandler {
       }
     };
 
-    if (environment.envName === 'development') {
-      console.log(message);
-      if (error) {
-        console.log(error.stack || error);
-      }
-    } else {
+
+    // if not in development, send to Sentry.io
+    if (environment.envName !== 'development') {
       if (error) {
         Raven.captureException(error.originalError, options);
       } else {
         Raven.captureMessage(message, options);
       }
     }
+
+    if (error) {
+      super.handleError(error);   // use angular error handler
+    } else if (environment.envName === 'development') {
+      console.log(message);       // if in development, log messages to console
+    }
+
   }
 
 }
