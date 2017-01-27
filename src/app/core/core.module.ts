@@ -1,5 +1,7 @@
-import { NgModule, ErrorHandler } from '@angular/core';
+import { NgModule, ErrorHandler, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
+import { SharedModule } from '../shared/shared.module';
 
 // Core Components
 import { HomeComponent } from './home/home.component';
@@ -33,4 +35,12 @@ import { ArticleService } from '../articles/article.service';
   ],
 
 })
-export class CoreModule { }
+export class CoreModule {
+  // prevent re-import
+  constructor (@Optional() @SkipSelf() parentModule: CoreModule) {
+    if (parentModule) {
+      throw new Error(
+        'CoreModule is already loaded. Import it in the AppModule only');
+    }
+  }
+}
