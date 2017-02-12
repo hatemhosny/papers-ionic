@@ -7,3 +7,5 @@ export const environment = {
   itemsPerPage: 10,
   client: 'web'
 };
+
+export const dbAdapter = new LokiIndexedAdapter('loki');

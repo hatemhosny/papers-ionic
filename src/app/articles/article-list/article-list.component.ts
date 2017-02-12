@@ -14,7 +14,6 @@ import { IArticle } from '../article.model';
 export class ArticleListComponent implements OnInit, AfterViewInit {
 
   items: IArticle[];
-  errorMessage: string;
 
   currentPage: number = 1;
   itemsPerPage: number;
@@ -49,7 +48,6 @@ export class ArticleListComponent implements OnInit, AfterViewInit {
         this.currentPage = page;
         this.loadingService.done();
 
-        this.errorMessage = null;
         this.pagination.pageQuery = page;
         window.scrollTo(0, 0);  // TODO smooth scroll
       },
